@@ -10,7 +10,13 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+app.get('/api/advert', (req, res) => {
   // User.deleteMany({}, (err, result) => {
   //   res.sendStatus(result.deletedCount);
   // })
@@ -21,10 +27,25 @@ app.get('/', (req, res) => {
   //   if (err) return handleError(err);
   //   res.send(users);
   // });
-  // Advert.find({}, (err, adverts) => {
-  //   if (err) return handleError(err);
-  //   res.send(adverts);
-  // })
+  Advert.find({}, (err, adverts) => {
+    if (err) return handleError(err);
+    res.send(adverts);
+  })
+})
+
+app.get('/api/user', (req, res) => {
+  User.find({}, (err, user) => {
+    if (err) return handleError(err);
+    res.send(user);
+  })
+})
+
+app.post('/api/user', async (req, res) => {
+  let user = await User.create(req.body);
+    return res.status(201).send({
+      error: false,
+      user
+    })
 })
 
 app.post('/', (req, res) => {
@@ -53,7 +74,7 @@ const advert = new Advert({
 // advert.save();
 
 const startServer = () => {
-  app.listen(port);
+  app.listen(serverPort);
   console.log(`app started on port ${serverPort}`);
 }
 
