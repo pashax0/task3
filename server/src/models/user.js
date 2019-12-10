@@ -1,35 +1,26 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    unique: true,
-    required: true
-  },
+  username: { type: String, unique: true, required: true },
   firstName: { type: String, required: true },
-  lastName : { type: String, required: true },
-  email    : { type: String, required: true },
-  phone    : { type: String, required: true },
+  lastName: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: { type: String, required: true },
+  adverts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Advert' }],
 });
 
-userSchema.statics.findByName = function(name) {
-  const user = this.findOne({
-    username: name,
-  }, (err, findingUser) => {
-    if (err) return console.log('User not found');
-    return findingUser;
-  });
-  console.log(Object.values(user));
-  if (!user) {//Think about it
-    return {error: 'Please authentificate'};
-  }
-  // console.log(user);
-  return user;
-};
+userSchema.virtual('contactInfo').get(function() {return `${this.email} ${this.phone}`});
 
-userSchema.pre('deleteOne', (next) => {
-  this.model('Advert').deleteMany({ user: this._id }, next);
-});
+// TODO delete adverts of user
+// userSchema.pre('deleteOne', function(next) {
+//   mongoose.model('Advert').deleteMany({ author: this._id }, next);
+// });
+
+// TODO authentification
+// userSchema.post('save', function() {
+//   global.myId = this._id;
+//   console.log(global.myId);
+// })
 
 const User = mongoose.model('User', userSchema);
 

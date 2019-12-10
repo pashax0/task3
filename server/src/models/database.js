@@ -6,7 +6,7 @@ const connectDb = (db_address) => {
   { 
     useNewUrlParser: true,
     useUnifiedTopology: true
-  }).catch(err => console.log(err));
+  }).catch(err => err);
   mongoose.Promise = global.Promise;
   return mongoose.connection;
 };
