@@ -6,7 +6,7 @@ const router = Router();
 router.post('/', advertController.addAdvert);
 router.get('/', advertController.getAdvertList);
 router.get('/:id', advertController.getAdvertByIdWithContacts);
-router.put('/:id', advertController.updateAdvertById);
-router.delete('/:id', advertController.deleteAdvertById);
+router.put('/', advertController.updateAdvertById);
+router.delete('/', advertController.deleteAdvertById);
 
 export default router;

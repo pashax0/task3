@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true, required: true },
+  username: { type: String, unique: true, required: true, minlength: 4 },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true },
@@ -11,10 +11,13 @@ const userSchema = new mongoose.Schema({
 
 userSchema.virtual('contactInfo').get(function() {return `${this.email} ${this.phone}`});
 
-// TODO delete adverts of user
-// userSchema.pre('deleteOne', function(next) {
-//   mongoose.model('Advert').deleteMany({ author: this._id }, next);
-// });
+userSchema.post('findOneAndDelete', (user, next) => {
+  if (!user) return next();
+  mongoose.model('Advert').deleteMany({ author: user._id }, (err, status) => {
+    if (err) return next(err);
+    next();
+  });
+});
 
 // TODO authentification
 // userSchema.post('save', function() {

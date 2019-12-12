@@ -1,4 +1,4 @@
 {
     "verbose": false,
-    "watch": "./"
+    "watch": "./src/"
 }

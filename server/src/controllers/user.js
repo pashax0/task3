@@ -19,15 +19,7 @@ export function addUser(req, res, next) {
 export function getUserList(req, res, next) {
   User.find({}, (err, users) => {
     if (err) return next(err);
-    const userNames = users.map(user => user.username);//TODO returned values
     res.send(users);
-  })
-}
-
-export function getUserById(req, res, next) {
-  User.findById(req.params.id, (err, user) => {
-    if (err) next(err);
-    res.send(user);
   })
 }
 
@@ -36,23 +28,26 @@ export function getUserWithAdvertsById(req, res, next) {
     .findById(req.params.id)
     .populate('adverts')
     .exec((err, user) => {
-      if (!user) return res.status(400).send({ error: 'Not found' });
+      if (err) return next(err);
+      if (!user) return res.status(404).send({ error: 'User not found' });
       res.send(user);
     })
 }
 
-export function updateUserById(req, res) {
+export function updateUserById(req, res, next) {
   const { body } = req;
-  User.findById(req.params.id, (err, user) => {
-    if (!user) return res.status(400).send({ error: 'Not found' });
-    user = Object.assign(user, body);
-    user.save();
+  User.findByIdAndUpdate(body._id, body, {runValidators: true, new: true}, (err, user) => {
+    if (!user || (err && err.name === 'CastError')) return res.status(400).send({ error: 'User not found' });
+    if (err) return next(err);
     res.send(user);
   })
 }
 
 export function deleteUserById(req, res, next) {
-  User.deleteOne({_id: req.params.id}, (err, status) => {
-    res.send(status);
+  const { body } = req;
+  User.findByIdAndDelete(body._id, (err, user) => {
+    if (!user || (err && err.name === 'CastError')) return res.status(400).send({ error: 'User not found' });
+    if (err) return next(err);
+    res.send(user);
   });
 }
