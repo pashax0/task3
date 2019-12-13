@@ -33,8 +33,8 @@ export function getAdvertByIdWithContacts(req, res, next) {
     .findById(req.params.id)
     .populate('author')
     .exec((err, advert) => {
-      if (!advert) return res.status(404).send({ error: 'Advert not found' });
       if (err) return next(err);
+      if (!advert) return res.status(404).send({ error: 'Advert not found' });
       advert.views += 1;
       advert.save({timestamps: false},(err, advert) => {
         if (err) return next(err);
@@ -46,7 +46,6 @@ export function getAdvertByIdWithContacts(req, res, next) {
 export function updateAdvertById(req, res, next) {
   const { body } = req;
   Advert.findByIdAndUpdate(body._id, body, {runValidators: true, new: true}, (err, advert) => {
-    if (!advert || (err && err.name === 'CastError')) return res.status(400).send({ error: 'Advert not found' });
     if (err) return next(err);
     res.send(advert);
   })
@@ -55,7 +54,6 @@ export function updateAdvertById(req, res, next) {
 export function deleteAdvertById(req, res, next) {
   const { body } = req;
   Advert.findByIdAndDelete(body._id, (err, advert) => {
-    if (!advert || (err && err.name === 'CastError')) return res.status(400).send({ error: 'Advert not found' });
     if (err) return next(err);
     res.send(advert);
   })

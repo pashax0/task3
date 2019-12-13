@@ -37,8 +37,8 @@ export function getUserWithAdvertsById(req, res, next) {
 export function updateUserById(req, res, next) {
   const { body } = req;
   User.findByIdAndUpdate(body._id, body, {runValidators: true, new: true}, (err, user) => {
-    if (!user || (err && err.name === 'CastError')) return res.status(400).send({ error: 'User not found' });
     if (err) return next(err);
+    if (!user) return res.status(400).send({ error: 'User not found' });
     res.send(user);
   })
 }
@@ -46,7 +46,6 @@ export function updateUserById(req, res, next) {
 export function deleteUserById(req, res, next) {
   const { body } = req;
   User.findByIdAndDelete(body._id, (err, user) => {
-    if (!user || (err && err.name === 'CastError')) return res.status(400).send({ error: 'User not found' });
     if (err) return next(err);
     res.send(user);
   });

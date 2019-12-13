@@ -8,29 +8,24 @@ const advertSchema = new mongoose.Schema({
   views: { type: Number, min: 0, default: 0 },
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true  },
 }, {
-  timestamps: {}
+  timestamps: { createdAt: 'created', updatedAt: 'modified' }
 });
 
 advertSchema.post('save', (advert, next) => {
-  if (!advert) return next();
-  mongoose.model('User').findById(advert.author._id, (err, user) => {
+  mongoose.model('User').findByIdAndUpdate(advert.author._id, {
+    $push: { adverts: advert._id }
+  }, (err) => {
     if (err) return next(err);
-    user.adverts.push(advert._id);
-    user.save(err => {
-      if (err) return next(err);
-      next();
-    })
+    next();
   })
 })
 
 advertSchema.post('findOneAndDelete', (advert, next) => {
-  mongoose.model('User').findById(advert.author._id, (err, user) => {
+  mongoose.model('User').findByIdAndUpdate(advert.author._id, {
+    $pull: { adverts: advert._id }
+  }, (err) => {
     if (err) return next(err);
-    user.adverts = user.adverts.filter(advertId => advertId != advert._id.toString());
-    user.save(err => {
-      if (err) return next(err);
-      next();
-    })
+    next();
   })
 });
 

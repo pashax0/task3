@@ -1,8 +1,12 @@
 export function auth(req, res, next) {
-  req.myId = '5df20e622cd13a57dd0e6e65';//TODO add authentification
+  req.myId = '5df29d11d64dcb7ccc0c7fe9';//TODO add authentification
   next();
 }
 
 export function errorHandler(err, req, res, next) {
-  res.status(500).send(`Error: ${err}`);
+  let statusCode = 500;
+  if(err && err.name === 'CastError') {
+    statusCode = 400;
+  }
+  res.status(statusCode).send(err);
 }
