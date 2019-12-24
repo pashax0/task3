@@ -12,6 +12,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(middlewares.auth);
 app.use('/api/users', routes.user);
 app.use('/api/adverts', routes.advert);
